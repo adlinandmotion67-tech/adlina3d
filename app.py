@@ -1,236 +1,141 @@
 import streamlit as st
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+import streamlit.components.v1 as components
 
-# Pengaturan halaman aplikasi
+# Set konfigurasi halaman agar penuh ke samping (Wide mode)
 st.set_page_config(
     page_title="AAS Shimadzu AA-7000 Virtual Lab",
     page_icon="🧪",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
-# Sidebar Navigasi
-st.sidebar.title("AA-7000 Virtual Lab")
-st.sidebar.write("Modul Pembelajaran Spektrofotometri")
-menu = st.sidebar.radio(
-    "Pilih Modul:",
-    [
-        "Beranda Utama",
-        "Teori & Hukum Beer",
-        "Preparasi Larutan",
-        "Kurva Kalibrasi",
-        "Analisis & Validasi"
-    ]
-)
+# Seluruh kode visual mewah asli (HTML, CSS, dan JavaScript interaktif)
+html_code = """
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAS Shimadzu AA-7000 Virtual Lab</title>
+    <!-- Tailwind CSS untuk Desain Dashboard Modern -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- Chart.js untuk Grafik Dinamis Interaktif -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- Lucide Icons untuk Ikon Menu -->
+    <script src="https://unpkg.com"></script>
+    <style>
+        @import url('https://googleapis.com');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .sidebar-item.active { background-color: #1e293b; color: #38bdf8; border-left: 4px solid #38bdf8; }
+        input[type="range"] { accent-color: #38bdf8; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
 
-# ==========================================
-# 1. MODUL: BERANDA UTAMA
-# ==========================================
-if menu == "Beranda Utama":
-    st.title("🧪 VIRTUAL LAB AAS")
-    st.subheader("Aplikasi Pembelajaran Inklusif & Interaktif Spektrofotometri Serapan Atom (Shimadzu AA-7000)")
-    
-    st.markdown("""
-    Selamat Datang! Aplikasi berbasis web ini dirancang khusus untuk memfasilitasi pembelajaran **Spektrofotometri Serapan Atom (AAS)** secara mendalam, interaktif, dan terstruktur.
-    
-    #### Fitur Unggulan Simulator Ini:
-    *   **Teori Interaktif:** Simulasi langsung Hukum Beer-Lambert dengan grafik dinamis.
-    *   **Modul Preparasi:** Kalkulator pengenceran larutan standar & sampel secara cepat.
-    *   **Kurva Kalibrasi Dinamis:** Perhitungan regresi linier instan untuk menentukan kelinieran data.
-    *   **Validasi Metode:** Analisis presisi (%RSD) dan akurasi (%Recovery) berbasis data laboratorium.
-    
-    *Tips Penggunaan: Gunakan menu di sidebar kiri untuk berpindah modul secara berurutan.*
-    """)
+    <!-- SIDEBAR NAVIGASI KIRI -->
+    <div class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between">
+        <div>
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                <div class="bg-sky-500/20 p-2 rounded-lg text-sky-400">
+                    <i data-lucide="beaker" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm text-slate-200 tracking-wide">AA-7000 Lab</h1>
+                    <p class="text-xs text-sky-400 font-medium">Versi 3.0 Advanced</p>
+                </div>
+            </div>
+            <nav class="mt-6 px-3 space-y-1">
+                <button onclick="switchTab('beranda')" id="menu-beranda" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
+                    <i data-lucide="home" class="w-4 h-4"></i> Beranda Utama
+                </button>
+                <button onclick="switchTab('teori')" id="menu-teori" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> Teori & Hukum Beer
+                </button>
+                <button onclick="switchTab('instrumen')" id="menu-instrumen" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
+                    <i data-lucide="layers" class="w-4 h-4"></i> Instrumen 3D
+                </button>
+                <div class="px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mt-4">Modul Analitik</div>
+                <button onclick="switchTab('preparasi')" id="menu-preparasi" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
+                    <i data-lucide="calculator" class="w-4 h-4"></i> Preparasi Larutan
+                </button>
+                <button onclick="switchTab('kurva')" id="menu-kurva" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
+                    <i data-lucide="trending-up" class="w-4 h-4"></i> Kurva Kalibrasi
+                </button>
+                <button onclick="switchTab('validasi')" id="menu-validasi" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
+                    <i data-lucide="check-square" class="w-4 h-4"></i> Analisis & Validasi
+                </button>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
+            Fokus: Analisis Kimia Kuantitatif
+        </div>
+    </div>
 
-# ==========================================
-# 2. MODUL: TEORI & HUKUM BEER
-# ==========================================
-elif menu == "Teori & Hukum Beer":
-    st.title("📚 Teori & Hukum Beer-Lambert")
-    st.markdown("""
-    ### Prinsip Dasar AAS
-    Spektrofotometri Serapan Atom (AAS) adalah metode analisis kuantitatif yang didasarkan pada penyerapan energi cahaya oleh **atom-atom bebas pada keadaan dasar (ground state)**.
-    """)
-    
-    st.latex(r"A = \epsilon \cdot b \cdot C")
-    st.caption("A = Absorbansi | ε = Absorptivitas | b = Lebar nyala | C = Konsentrasi")
-    
-    st.subheader("Simulasi Interaktif")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        epsilon = st.slider("Absorptivitas Molar (ε) [L/(mol.cm)]", min_value=100, max_value=1000, value=500, step=50)
-        b = st.slider("Lebar Lintasan / Celah Api (b) [cm]", min_value=1.0, max_value=10.0, value=5.0, step=0.5)
-        c = st.slider("Konsentrasi Target (C) x 10⁻⁴ [M]", min_value=0.5, max_value=5.0, value=2.0, step=0.1)
+    <!-- AREA KONTEN UTAMA -->
+    <div class="flex-1 overflow-y-auto bg-slate-950 p-8">
         
-        # Hitung Nilai Absorbansi
-        absorbansi = epsilon * b * (c * 1e-4)
-        st.metric("Nilai Absorbansi (A)", f"{absorbansi:.3f}")
-        
-    with col2:
-        c_array = np.linspace(0, 6, 100)
-        a_array = epsilon * b * (c_array * 1e-4)
-        
-        fig, ax = plt.subplots()
-        ax.plot(c_array, a_array, label='Garis Teoretis', color='blue')
-        ax.scatter([c], [absorbansi], color='red', s=100, label='Titik Saat Ini')
-        ax.set_xlabel("Konsentrasi (C) x 10⁻⁴ M")
-        ax.set_ylabel("Absorbansi (A)")
-        ax.set_title("Grafik Hubungan Linier")
-        ax.legend()
-        ax.grid(True)
-        st.pyplot(fig)
+        <!-- ================= BERANDA UTAMA ================= -->
+        <div id="tab-beranda" class="tab-content space-y-6">
+            <div class="bg-gradient-to-r from-sky-900/40 to-slate-900 p-8 rounded-2xl border border-sky-500/20 shadow-xl">
+                <span class="bg-sky-500/10 text-sky-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Selamat Datang</span>
+                <h2 class="text-3xl font-extrabold text-white mt-3">VIRTUAL LAB AAS SHIMADZU AA-7000</h2>
+                <p class="text-slate-400 mt-2 max-w-3xl text-sm leading-relaxed">
+                    Aplikasi pembelajaran inklusif dan interaktif ini mensimulasikan operasional instrumen nyata laboratorium dengan pengolahan data analitik aktual spektrofotometri serapan atom.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800/80">
+                    <div class="text-sky-400 mb-3"><i data-lucide="eye" class="w-6 h-6"></i></div>
+                    <h3 class="font-semibold text-sm text-slate-200">Visualisasi 3D</h3>
+                    <p class="text-xs text-slate-500 mt-1">Eksplorasi struktur optik internal dan ruang pembakaran atomisasi nyala api.</p>
+                </div>
+                <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800/80">
+                    <div class="text-emerald-400 mb-3"><i data-lucide="flask-conical" class="w-6 h-6"></i></div>
+                    <h3 class="font-semibold text-sm text-slate-200">Modul Preparasi</h3>
+                    <p class="text-xs text-slate-500 mt-1">Simulasi kalkulator pengenceran deret larutan induk standar laboratorium.</p>
+                </div>
+                <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800/80">
+                    <div class="text-amber-400 mb-3"><i data-lucide="line-chart" class="w-6 h-6"></i></div>
+                    <h3 class="font-semibold text-sm text-slate-200">Kurva Kalibrasi</h3>
+                    <p class="text-xs text-slate-500 mt-1">Algoritma perhitungan otomatis regresi linier, batas deteksi LoD & LoQ.</p>
+                </div>
+                <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800/80">
+                    <div class="text-indigo-400 mb-3"><i data-lucide="shield-check" class="w-6 h-6"></i></div>
+                    <h3 class="font-semibold text-sm text-slate-200">Validasi Metode</h3>
+                    <p class="text-xs text-slate-500 mt-1">Evaluasi tingkat kedekatan presisi (%RSD) dan akurasi temu balik (%Recovery).</p>
+                </div>
+            </div>
+        </div>
 
-# ==========================================
-# 3. MODUL: PREPARASI LARUTAN
-# ==========================================
-elif menu == "Preparasi Larutan":
-    st.title("🧪 Preparasi Larutan & Pengenceran")
-    
-    st.subheader("Pengenceran Standar (M₁V₁ = M₂V₂)")
-    st.write("Hitung volume larutan induk yang perlu dipipet untuk membuat deret standar.")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        m1 = st.number_input("Konsentrasi Larutan Induk (M₁) [ppm]", value=100.0, step=10.0)
-        m2 = st.number_input("Kons. Target (M₂) [ppm]", value=5.0, step=0.5)
-        v2 = st.number_input("Vol. Labu Takar (V₂) [mL]", value=50.0, step=5.0)
-        
-        if m1 > 0:
-            v1 = (m2 * v2) / m1
-            st.success(f"Volume Dipipet (V₁): **{v1:.2f} mL**")
-        else:
-            st.error("Konsentrasi awal harus lebih besar dari 0")
-            
-    with col2:
-        st.subheader("Faktor Pengenceran (FP) Sampel")
-        st.write("Hitung pengali (FP) jika sampel terlalu pekat.")
-        v_awal = st.number_input("Volume Pipet Sampel Awal [mL]", value=10.0, step=1.0)
-        v_akhir = st.number_input("Ditepatkan dalam Labu Takar [mL]", value=100.0, step=10.0)
-        
-        if v_awal > 0:
-            fp = v_akhir / v_awal
-            st.success(f"Faktor Pengenceran (FP): **{fp:.1f} x**")
-        else:
-            st.error("Volume awal harus lebih besar dari 0")
+        <!-- ================= TEORI & HUKUM BEER ================= -->
+        <div id="tab-teori" class="tab-content hidden space-y-6">
+            <h2 class="text-2xl font-bold text-white flex items-center gap-2"><i data-lucide="book-open" class="text-sky-400"></i> Teori & Hukum Beer-Lambert</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4">
+                    <h3 class="font-semibold text-slate-200 border-b border-slate-800 pb-2">Parameter Simulasi</h3>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Absorptivitas Molar (ε): <span id="val-eps" class="text-sky-400 font-bold">500</span></label>
+                        <input type="range" id="input-eps" min="100" max="1000" value="500" step="50" oninput="simulasiBeer()" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Lebar Jalur Celah Api (b): <span id="val-b" class="text-sky-400 font-bold">5.0</span> cm</label>
+                        <input type="range" id="input-b" min="1" max="10" value="5" step="0.5" oninput="simulasiBeer()" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Konsentrasi Target (C) x 10⁻⁴: <span id="val-c" class="text-sky-400 font-bold">2.0</span> M</label>
+                        <input type="range" id="input-c" min="0.5" max="5" value="2" step="0.1" oninput="simulasiBeer()" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-lg border border-slate-800/80 text-center">
+                        <div class="text-xs text-slate-400 font-medium">Output Nilai Absorbansi (A)</div>
+                        <div id="output-beer-a" class="text-3xl font-black text-sky-400 mt-1">0.500</div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-slate-900 p-6 rounded-xl border border-slate-800 flex items-center justify-center">
+                    <div class="w-full h-64"><canvas id="beerChart"></canvas></div>
+                </div>
+            </div>
+        </div>
 
-# ==========================================
-# 4. MODUL: KURVA KALIBRASI
-# ==========================================
-elif menu == "Kurva Kalibrasi":
-    st.title("📈 Kurva Kalibrasi Standar")
-    st.write("Isi nilai Absorbansi alat berdasarkan deret konsentrasi standar.")
-    
-    data_awal = {
-        "Konsentrasi (X) ppm": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
-        "Absorbansi (Y)": [0.000, 0.125, 0.252, 0.370, 0.495, 0.615]
-    }
-    df = pd.DataFrame(data_awal)
-    
-    edited_df = st.data_editor(df, num_rows="dynamic")
-    
-    x = edited_df["Konsentrasi (X) ppm"].values
-    y = edited_df["Absorbansi (Y)"].values
-    
-    if len(x) > 1:
-        slope, intercept = np.polyfit(x, y, 1)
-        r_squared = np.corrcoef(x, y) ** 2
-        
-        st.session_state['slope'] = slope
-        st.session_state['intercept'] = intercept
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("#### Persamaan Regresi")
-            st.info(f"**Y = {slope:.4f}X + {intercept:.4f}**")
-            st.write(f"**Slope (b):** {slope:.4f}")
-            st.write(f"**Intercept (a):** {intercept:.4f}")
-            st.write(f"**R² (Linearitas):** {r_squared:.4f}")
-            
-            y_pred = slope * x + intercept
-            residual_std = np.std(y - y_pred, ddof=2) if len(x) > 2 else 0.001
-            lod = (3 * residual_std) / slope if slope != 0 else 0
-            loq = (10 * residual_std) / slope if slope != 0 else 0
-            
-            st.markdown("#### Batas Deteksi")
-            st.write(f"**LoD (Batas Deteksi):** {lod:.3f} ppm")
-            st.write(f"**LoQ (Batas Kuantitasi):** {loq:.3f} ppm")
-            
-        with col2:
-            fig, ax = plt.subplots()
-            ax.scatter(x, y, color='red', label='Data Riil')
-            ax.plot(x, y_pred, color='blue', label=f'Trendline (R²={r_squared:.4f})')
-            ax.set_xlabel("Konsentrasi (ppm)")
-            ax.set_ylabel("Absorbansi (A)")
-            ax.set_title("Grafik Kalibrasi")
-            ax.legend()
-            ax.grid(True)
-            st.pyplot(fig)
-    else:
-        st.warning("Masukkan minimal 2 baris data standar untuk menghitung kurva.")
-
-# ==========================================
-# 5. MODUL: ANALISIS & VALIDASI METODE
-# ==========================================
-elif menu == "Analisis & Validasi":
-    st.title("📊 Analisis & Validasi Metode")
-    
-    slope = st.session_state.get('slope', 0.1228)
-    intercept = st.session_state.get('intercept', 0.001)
-    
-    st.markdown(f"**Menggunakan Persamaan Aktif:** `Y = {slope:.4f}X + {intercept:.4f}`")
-    
-    tab1, tab2, tab3 = st.tabs(["Kadar Sampel", "Uji Presisi (%RSD)", "Uji Akurasi (%Rec)"])
-    
-    with tab1:
-        st.subheader("Hitung Konsentrasi Sampel")
-        y_sampel = st.number_input("Absorbansi Alat (Y) untuk Sampel", value=0.350, format="%.3f")
-        fp_sampel = st.number_input("Masukkan Faktor Pengenceran (FP)", value=1.0, min_value=1.0)
-        
-        if slope != 0:
-            c_hasil = ((y_sampel - intercept) / slope) * fp_sampel
-            st.metric("Konsentrasi Akhir Sampel", f"{c_hasil:.3f} ppm")
-        else:
-            st.error("Kurva kalibrasi tidak valid.")
-            
-    with tab2:
-        st.subheader("Uji Presisi Alat (Keterulangan)")
-        st.write("Masukkan nilai absorbansi data replikasi ulangan Anda:")
-        
-        # BAGIAN YANG SUDAH DIPERBAIKI (TIDAK EROR LAGI)
-        data_presisi = st.data_editor(
-            pd.DataFrame({"Replikasi": [1, 2, 3, 4, 5], "Absorbansi": [0.350, 0.352, 0.348, 0.351, 0.349]}),
-            num_rows="dynamic"
-        )
-        
-        y_vals = data_presisi["Absorbansi"].values
-        if len(y_vals) >= 3:
-            mean_y = np.mean(y_vals)
-            std_y = np.std(y_vals, ddof=1)
-            rsd = (std_y / mean_y) * 100
-            
-            st.write(f"**Rata-rata Absorbansi:** {mean_y:.4f}")
-            st.write(f"**Standar Deviasi (SD):** {std_y:.5f}")
-            if rsd < 2.0:
-                st.success(f"**Relative Standard Deviation (%RSD):** {rsd:.2f}% (Metode Presisi < 2%)")
-            else:
-                st.warning(f"**Relative Standard Deviation (%RSD):** {rsd:.2f}% (Kurang presisi > 2%)")
-        else:
-            st.info("Masukkan minimal 3 data ulangan untuk uji presisi.")
-            
-    with tab3:
-        st.subheader("Uji Temu Balik (Metode Spike / Akurasi)")
-        c_nol = st.number_input("1. Konsentrasi Sampel Asli (C₀) [ppm]", value=2.0)
-        c_add = st.number_input("2. Jumlah Standar Murni yang Ditambahkan (C_add) [ppm]", value=3.0)
-        c_satu = st.number_input("3. Konsentrasi Terbaca Setelah Spike (C₁) [ppm]", value=4.9)
-        
-        if c_add > 0:
-            recovery = ((c_satu - c_nol) / c_add) * 100
-            st.metric("Persentase Recovery (%Rec)", f"{recovery:.1f} %")
-            if 80.0 <= recovery <= 120.0:
-                st.success("Akurasi Baik (Masuk dalam rentang regulasi 80% - 120%)")
-            else:
-                st.warning("Akurasi di luar batas ideal laboratorium.")
-        else:
-            st.error("Nilai penambahan standar harus lebih besar dari 0.")
+        <!-- ================= INSTRUMEN 3D SIMULATOR ================= -->
+        <div id="tab-instrumen" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">

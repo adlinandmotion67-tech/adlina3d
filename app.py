@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # Seluruh aplikasi HTML, CSS Modern, dan JavaScript interaktif dibungkus di sini dengan aman
-html_lab_aplikasi = """
+html_lab_aplikasi =
 <!DOCTYPE html>
 <html lang="id">
 <head>

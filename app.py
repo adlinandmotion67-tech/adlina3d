@@ -200,7 +200,7 @@ elif menu == "Analisis & Validasi":
         
         # BAGIAN YANG SUDAH DIPERBAIKI (TIDAK EROR LAGI)
         data_presisi = st.data_editor(
-            pd.DataFrame({"Replikasi":, "Absorbansi": [0.350, 0.352, 0.348, 0.351, 0.349]}),
+            pd.DataFrame({"Replikasi": [1, 2, 3, 4, 5], "Absorbansi": [0.350, 0.352, 0.348, 0.351, 0.349]}),
             num_rows="dynamic"
         )
         

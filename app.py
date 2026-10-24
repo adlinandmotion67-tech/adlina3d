@@ -9,7 +9,7 @@ st.set_page_config(
 )
 
 # Seluruh aplikasi HTML, CSS Modern, dan JavaScript interaktif dibungkus di sini dengan aman
-html_lab_aplikasi =
+html_lab_aplikasi = """
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -42,7 +42,7 @@ html_lab_aplikasi =
             padding-top: 20px;
         }
         .sidebar .nav-link {
-            color: #rgba(255,255,255,0.8);
+            color: rgba(255,255,255,0.8);
             margin: 5px 15px;
             padding: 12px;
             border-radius: 8px;
@@ -78,18 +78,9 @@ html_lab_aplikasi =
             overflow: hidden;
             border: 2px dashed var(--accent-color);
         }
-        .live-display {
-            background: #000;
-            color: #00ff00;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 1.5rem;
-            box-shadow: inset 0 0 10px rgba(0,255,0,0.5);
-        }
         .flame {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             background: linear-gradient(transparent, #ff3d00, #ffea00);
             border-radius: 0 50% 50% 50%;
             transform: rotate(-45deg);
@@ -146,7 +137,33 @@ html_lab_aplikasi =
                     <hr>
                     <p>Selamat Datang! Aplikasi berbasis web ini dirancang khusus untuk memfasilitasi pembelajaran laboratorium instrumen secara mendalam, interaktif, dan terstruktur. Modul ini mensimulasikan instrumen nyata dengan pengolahan data analitik aktual.</p>
                     
-                    <h4 class="mt-4 fw-bold">Fitur Unggulan Simulator Ini:</h4>
+                    <!-- TABEL KELOMPOK 5 YANG DIINGINKAN -->
+                    <div class="mt-4">
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-users text-primary"></i> IDENTITAS KELOMPOK 5</h5>
+                        <table class="table table-bordered table-striped table-hover text-center align-middle shadow-sm">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 10%;">No</th>
+                                    <th>Nama Anggota</th>
+                                    <th style="width: 25%;">NIM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1</td><td>ADLINA DHIVA TSANIYAH</td><td>2560555</td></tr>
+                                <tr><td>2</td><td>ALIIFAH DHIYAAVINA</td><td>2560564</td></tr>
+                                <tr><td>3</td><td>ARIF MAULANA</td><td>2560579</td></tr>
+                                <tr><td>4</td><td>ELVIA ELVARITTA</td><td>2560618</td></tr>
+                                <tr><td>5</td><td>IKE NURCAHYA</td><td>2560642</td></tr>
+                                <tr><td>6</td><td>MUHAMMAD ARKAN HANIF</td><td>2560676</td></tr>
+                                <tr><td>7</td><td>NABILA PUTRI KHOIRINNISA</td><td>2560695</td></tr>
+                                <tr><td>8</td><td>NAILA PUTRI ZAHRA</td><td>2560701</td></tr>
+                                <tr><td>9</td><td>RAFI ALIFIA SHARIATI</td><td>2560739</td></tr>
+                                <tr><td>10</td><td>NEHA ATSANA PUTRI AHMAD</td><td>2460469</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h4 class="mt-4 fw-bold">Fitur Utama Simulator Ini:</h4>
                     <div class="row mt-3">
                         <div class="col-md-6 mb-3">
                             <div class="p-3 bg-light rounded shadow-sm"><i class="fa-solid fa-vr-cardboard text-success me-2"></i> <strong>Visualisasi 3D Instrumen:</strong> Jelajahi komponen optik dan proses atomisasi.</div>
@@ -164,7 +181,7 @@ html_lab_aplikasi =
                 </div>
             </div>
 
-            <!-- MODUL 2: TEORI & HUKUM BEER -->
+            <!-- MODUL 2: TEORI -->
             <div id="menu-teori" class="menu-section d-none">
                 <div class="custom-card">
                     <h2 class="fw-bold text-dark">Teori & Hukum Beer-Lambert</h2>
@@ -175,29 +192,3 @@ html_lab_aplikasi =
                         <div class="col-md-5">
                             <label class="form-label fw-bold">Absorptivitas Molar (ε):</label>
                             <input type="range" class="form-range" id="teori-eps" min="100" max="1000" value="500" oninput="updateTeori()">
-                            <span id="val-eps">500</span> L/(mol.cm)
-                            
-                            <label class="form-label fw-bold mt-3">Lebar Lintasan Celah Api (b):</label>
-                            <input type="range" class="form-range" id="teori-b" min="1" max="10" value="5" step="0.5" oninput="updateTeori()">
-                            <span id="val-b">5.0</span> cm
-                            
-                            <label class="form-label fw-bold mt-3">Konsentrasi Target (C) x 10⁻⁴:</label>
-                            <input type="range" class="form-range" id="teori-c" min="0.5" max="5" value="2" step="0.1" oninput="updateTeori()">
-                            <span id="val-c">2.0</span> M
-                            
-                            <div class="mt-4 p-3 bg-dark text-white rounded text-center">
-                                <h5>Nilai Absorbansi (A):</h5>
-                                <div id="teori-abs" class="fs-3 fw-bold text-warning">0.500</div>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <canvas id="chartTeori" height="250"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODUL 3: EKSPLORASI INSTRUMEN 3D -->
-            <div id="menu-instrumen" class="menu-section d-none">
-                <div class="custom-card">
-                    <h2 class="fw-bold text-dark">Eksplorasi Instrumen 3D</h2>

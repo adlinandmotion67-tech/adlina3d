@@ -1,141 +1,203 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# Set konfigurasi halaman agar penuh ke samping (Wide mode)
+# Mengatur tampilan halaman utama menjadi wide (lebar)
 st.set_page_config(
     page_title="AAS Shimadzu AA-7000 Virtual Lab",
     page_icon="🧪",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
-# Seluruh kode visual mewah asli (HTML, CSS, dan JavaScript interaktif)
-html_code = """
+# Seluruh aplikasi HTML, CSS Modern, dan JavaScript interaktif dibungkus di sini dengan aman
+html_lab_aplikasi = """
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AAS Shimadzu AA-7000 Virtual Lab</title>
-    <!-- Tailwind CSS untuk Desain Dashboard Modern -->
+    <!-- Bootstrap & FontAwesome untuk tampilan modern ala Dashboard Lab -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <link href="https://cloudflare.com" rel="stylesheet">
+    <!-- Chart.js untuk Grafik Dinamis yang Bisa Diklik dan Digeser -->
     <script src="https://jsdelivr.net"></script>
-    <!-- Chart.js untuk Grafik Dinamis Interaktif -->
-    <script src="https://jsdelivr.net"></script>
-    <!-- Lucide Icons untuk Ikon Menu -->
-    <script src="https://unpkg.com"></script>
+    
     <style>
-        @import url('https://googleapis.com');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .sidebar-item.active { background-color: #1e293b; color: #38bdf8; border-left: 4px solid #38bdf8; }
-        input[type="range"] { accent-color: #38bdf8; }
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #00adb5;
+            --dark-bg: #1a1a2e;
+            --card-bg: #222831;
+            --text-light: #eeeeee;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .sidebar {
+            background-color: var(--primary-color);
+            color: white;
+            min-height: 100vh;
+            padding-top: 20px;
+        }
+        .sidebar .nav-link {
+            color: #rgba(255,255,255,0.8);
+            margin: 5px 15px;
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .main-content {
+            padding: 30px;
+        }
+        .custom-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--accent-color);
+        }
+        .visual-3d-box {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            border-radius: 12px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border: 2px dashed var(--accent-color);
+        }
+        .live-display {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1.5rem;
+            box-shadow: inset 0 0 10px rgba(0,255,0,0.5);
+        }
+        .flame {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(transparent, #ff3d00, #ffea00);
+            border-radius: 0 50% 50% 50%;
+            transform: rotate(-45deg);
+            animation: burn 0.5s infinite alternate;
+            display: none;
+        }
+        @keyframes burn {
+            from { transform: rotate(-45deg) scale(0.9); }
+            to { transform: rotate(-45deg) scale(1.1); }
+        }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body>
 
-    <!-- SIDEBAR NAVIGASI KIRI -->
-    <div class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between">
-        <div>
-            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
-                <div class="bg-sky-500/20 p-2 rounded-lg text-sky-400">
-                    <i data-lucide="beaker" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-sm text-slate-200 tracking-wide">AA-7000 Lab</h1>
-                    <p class="text-xs text-sky-400 font-medium">Versi 3.0 Advanced</p>
-                </div>
+<div class="container-fluid">
+    <div class="row">
+        <!-- SIDEBAR MENU MODIS -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse shadow">
+            <div class="position-sticky text-center mb-4">
+                <i class="fa-solid fa-flask-vial fa-3x text-info mb-2"></i>
+                <h5 class="fw-bold">AA-7000 Lab</h5>
+                <span class="badge bg-secondary">Versi 3.0 Advanced</span>
             </div>
-            <nav class="mt-6 px-3 space-y-1">
-                <button onclick="switchTab('beranda')" id="menu-beranda" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i data-lucide="home" class="w-4 h-4"></i> Beranda Utama
-                </button>
-                <button onclick="switchTab('teori')" id="menu-teori" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i data-lucide="book-open" class="w-4 h-4"></i> Teori & Hukum Beer
-                </button>
-                <button onclick="switchTab('instrumen')" id="menu-instrumen" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i data-lucide="layers" class="w-4 h-4"></i> Instrumen 3D
-                </button>
-                <div class="px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mt-4">Modul Analitik</div>
-                <button onclick="switchTab('preparasi')" id="menu-preparasi" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i data-lucide="calculator" class="w-4 h-4"></i> Preparasi Larutan
-                </button>
-                <button onclick="switchTab('kurva')" id="menu-kurva" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i data-lucide="trending-up" class="w-4 h-4"></i> Kurva Kalibrasi
-                </button>
-                <button onclick="switchTab('validasi')" id="menu-validasi" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-400 rounded-lg hover:bg-slate-800/50 hover:text-slate-200 transition">
-                    <i data-lucide="check-square" class="w-4 h-4"></i> Analisis & Validasi
-                </button>
-            </nav>
-        </div>
-        <div class="p-4 border-t border-slate-800 text-xs text-slate-500 text-center">
-            Fokus: Analisis Kimia Kuantitatif
-        </div>
-    </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" onclick="switchMenu('beranda', this)"><i class="fa-solid fa-house me-2"></i> Beranda Utama</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="switchMenu('teori', this)"><i class="fa-solid fa-book-open me-2"></i> Teori & Hukum Beer</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="switchMenu('instrumen', this)"><i class="fa-solid fa-cube me-2"></i> Instrumen 3D</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="switchMenu('preparasi', this)"><i class="fa-solid fa-calculator me-2"></i> Preparasi Larutan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="switchMenu('kalibrasi', this)"><i class="fa-solid fa-chart-line me-2"></i> Kurva Kalibrasi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="switchMenu('validasi', this)"><i class="fa-solid fa-square-check me-2"></i> Analisis & Validasi</a>
+                </li>
+            </ul>
+        </nav>
 
-    <!-- AREA KONTEN UTAMA -->
-    <div class="flex-1 overflow-y-auto bg-slate-950 p-8">
-        
-        <!-- ================= BERANDA UTAMA ================= -->
-        <div id="tab-beranda" class="tab-content space-y-6">
-            <div class="bg-gradient-to-r from-sky-900/40 to-slate-900 p-8 rounded-2xl border border-sky-500/20 shadow-xl">
-                <span class="bg-sky-500/10 text-sky-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Selamat Datang</span>
-                <h2 class="text-3xl font-extrabold text-white mt-3">VIRTUAL LAB AAS SHIMADZU AA-7000</h2>
-                <p class="text-slate-400 mt-2 max-w-3xl text-sm leading-relaxed">
-                    Aplikasi pembelajaran inklusif dan interaktif ini mensimulasikan operasional instrumen nyata laboratorium dengan pengolahan data analitik aktual spektrofotometri serapan atom.
-                </p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800/80">
-                    <div class="text-sky-400 mb-3"><i data-lucide="eye" class="w-6 h-6"></i></div>
-                    <h3 class="font-semibold text-sm text-slate-200">Visualisasi 3D</h3>
-                    <p class="text-xs text-slate-500 mt-1">Eksplorasi struktur optik internal dan ruang pembakaran atomisasi nyala api.</p>
-                </div>
-                <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800/80">
-                    <div class="text-emerald-400 mb-3"><i data-lucide="flask-conical" class="w-6 h-6"></i></div>
-                    <h3 class="font-semibold text-sm text-slate-200">Modul Preparasi</h3>
-                    <p class="text-xs text-slate-500 mt-1">Simulasi kalkulator pengenceran deret larutan induk standar laboratorium.</p>
-                </div>
-                <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800/80">
-                    <div class="text-amber-400 mb-3"><i data-lucide="line-chart" class="w-6 h-6"></i></div>
-                    <h3 class="font-semibold text-sm text-slate-200">Kurva Kalibrasi</h3>
-                    <p class="text-xs text-slate-500 mt-1">Algoritma perhitungan otomatis regresi linier, batas deteksi LoD & LoQ.</p>
-                </div>
-                <div class="bg-slate-900/60 p-5 rounded-xl border border-slate-800/80">
-                    <div class="text-indigo-400 mb-3"><i data-lucide="shield-check" class="w-6 h-6"></i></div>
-                    <h3 class="font-semibold text-sm text-slate-200">Validasi Metode</h3>
-                    <p class="text-xs text-slate-500 mt-1">Evaluasi tingkat kedekatan presisi (%RSD) dan akurasi temu balik (%Recovery).</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= TEORI & HUKUM BEER ================= -->
-        <div id="tab-teori" class="tab-content hidden space-y-6">
-            <h2 class="text-2xl font-bold text-white flex items-center gap-2"><i data-lucide="book-open" class="text-sky-400"></i> Teori & Hukum Beer-Lambert</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4">
-                    <h3 class="font-semibold text-slate-200 border-b border-slate-800 pb-2">Parameter Simulasi</h3>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Absorptivitas Molar (ε): <span id="val-eps" class="text-sky-400 font-bold">500</span></label>
-                        <input type="range" id="input-eps" min="100" max="1000" value="500" step="50" oninput="simulasiBeer()" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Lebar Jalur Celah Api (b): <span id="val-b" class="text-sky-400 font-bold">5.0</span> cm</label>
-                        <input type="range" id="input-b" min="1" max="10" value="5" step="0.5" oninput="simulasiBeer()" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Konsentrasi Target (C) x 10⁻⁴: <span id="val-c" class="text-sky-400 font-bold">2.0</span> M</label>
-                        <input type="range" id="input-c" min="0.5" max="5" value="2" step="0.1" oninput="simulasiBeer()" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer">
-                    </div>
-                    <div class="bg-slate-950 p-4 rounded-lg border border-slate-800/80 text-center">
-                        <div class="text-xs text-slate-400 font-medium">Output Nilai Absorbansi (A)</div>
-                        <div id="output-beer-a" class="text-3xl font-black text-sky-400 mt-1">0.500</div>
+        <!-- MAIN INTERACTIVE CONTENT -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+            
+            <!-- MODUL 1: BERANDA -->
+            <div id="menu-beranda" class="menu-section">
+                <div class="custom-card">
+                    <h1 class="display-5 fw-bold text-dark"><i class="fa-solid fa-atom text-info"></i> VIRTUAL LAB AAS</h1>
+                    <p class="lead text-secondary">Aplikasi Pembelajaran Inklusif & Interaktif Spektrofotometri Serapan Atom (Shimadzu AA-7000)</p>
+                    <hr>
+                    <p>Selamat Datang! Aplikasi berbasis web ini dirancang khusus untuk memfasilitasi pembelajaran laboratorium instrumen secara mendalam, interaktif, dan terstruktur. Modul ini mensimulasikan instrumen nyata dengan pengolahan data analitik aktual.</p>
+                    
+                    <h4 class="mt-4 fw-bold">Fitur Unggulan Simulator Ini:</h4>
+                    <div class="row mt-3">
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded shadow-sm"><i class="fa-solid fa-vr-cardboard text-success me-2"></i> <strong>Visualisasi 3D Instrumen:</strong> Jelajahi komponen optik dan proses atomisasi.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded shadow-sm"><i class="fa-solid fa-vial text-warning me-2"></i> <strong>Modul Preparasi:</strong> Kalkulator pengenceran larutan standar & sampel instan.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded shadow-sm"><i class="fa-solid fa-chart-simple text-danger me-2"></i> <strong>Kurva Kalibrasi Dinamis:</strong> Perhitungan regresi linier nyata beserta penentuan nilai LoD & LoQ.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="p-3 bg-light rounded shadow-sm"><i class="fa-solid fa-check-double text-primary me-2"></i> <strong>Validasi Metode:</strong> Analisis presisi (%RSD) dan akurasi (%Recovery).</div>
+                        </div>
                     </div>
                 </div>
-                <div class="lg:col-span-2 bg-slate-900 p-6 rounded-xl border border-slate-800 flex items-center justify-center">
-                    <div class="w-full h-64"><canvas id="beerChart"></canvas></div>
+            </div>
+
+            <!-- MODUL 2: TEORI & HUKUM BEER -->
+            <div id="menu-teori" class="menu-section d-none">
+                <div class="custom-card">
+                    <h2 class="fw-bold text-dark">Teori & Hukum Beer-Lambert</h2>
+                    <p class="text-secondary">Prinsip dasar Spektrofotometri Serapan Atom berlandaskan pada penyerapan radiasi cahaya oleh atom bebas keadaan dasar.</p>
+                    <div class="alert alert-info text-center fs-4 fw-bold">A = ε · b · C</div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">Absorptivitas Molar (ε):</label>
+                            <input type="range" class="form-range" id="teori-eps" min="100" max="1000" value="500" oninput="updateTeori()">
+                            <span id="val-eps">500</span> L/(mol.cm)
+                            
+                            <label class="form-label fw-bold mt-3">Lebar Lintasan Celah Api (b):</label>
+                            <input type="range" class="form-range" id="teori-b" min="1" max="10" value="5" step="0.5" oninput="updateTeori()">
+                            <span id="val-b">5.0</span> cm
+                            
+                            <label class="form-label fw-bold mt-3">Konsentrasi Target (C) x 10⁻⁴:</label>
+                            <input type="range" class="form-range" id="teori-c" min="0.5" max="5" value="2" step="0.1" oninput="updateTeori()">
+                            <span id="val-c">2.0</span> M
+                            
+                            <div class="mt-4 p-3 bg-dark text-white rounded text-center">
+                                <h5>Nilai Absorbansi (A):</h5>
+                                <div id="teori-abs" class="fs-3 fw-bold text-warning">0.500</div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <canvas id="chartTeori" height="250"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ================= INSTRUMEN 3D SIMULATOR ================= -->
-        <div id="tab-instrumen" class="tab-content hidden space-y-6">
-            <div class="flex justify-between items-center">
+            <!-- MODUL 3: EKSPLORASI INSTRUMEN 3D -->
+            <div id="menu-instrumen" class="menu-section d-none">
+                <div class="custom-card">
+                    <h2 class="fw-bold text-dark">Eksplorasi Instrumen 3D</h2>

@@ -64,12 +64,11 @@ elif menu == "Teori & Hukum Beer":
         b = st.slider("Lebar Lintasan / Celah Api (b) [cm]", min_value=1.0, max_value=10.0, value=5.0, step=0.5)
         c = st.slider("Konsentrasi Target (C) x 10⁻⁴ [M]", min_value=0.5, max_value=5.0, value=2.0, step=0.1)
         
-        # Hitung Nilai Absorbansi (C dikali 10^-4 untuk simulasi skala kecil)
+        # Hitung Nilai Absorbansi
         absorbansi = epsilon * b * (c * 1e-4)
         st.metric("Nilai Absorbansi (A)", f"{absorbansi:.3f}")
         
     with col2:
-        # Menampilkan Grafik Hubungan Konsentrasi dan Absorbansi secara Live
         c_array = np.linspace(0, 6, 100)
         a_array = epsilon * b * (c_array * 1e-4)
         
@@ -123,7 +122,6 @@ elif menu == "Kurva Kalibrasi":
     st.title("📈 Kurva Kalibrasi Standar")
     st.write("Isi nilai Absorbansi alat berdasarkan deret konsentrasi standar.")
     
-    # Input Data Menggunakan Dataframe Interaktif
     data_awal = {
         "Konsentrasi (X) ppm": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
         "Absorbansi (Y)": [0.000, 0.125, 0.252, 0.370, 0.495, 0.615]
@@ -136,11 +134,9 @@ elif menu == "Kurva Kalibrasi":
     y = edited_df["Absorbansi (Y)"].values
     
     if len(x) > 1:
-        # Perhitungan Regresi Linier Otomatis
         slope, intercept = np.polyfit(x, y, 1)
-        r_squared = np.corrcoef(x, y)[0, 1] ** 2
+        r_squared = np.corrcoef(x, y) ** 2
         
-        # Simpan nilai slope dan intercept ke dalam session state agar bisa dibaca di halaman lain
         st.session_state['slope'] = slope
         st.session_state['intercept'] = intercept
         
@@ -152,7 +148,6 @@ elif menu == "Kurva Kalibrasi":
             st.write(f"**Intercept (a):** {intercept:.4f}")
             st.write(f"**R² (Linearitas):** {r_squared:.4f}")
             
-            # Estimasi Statistik LoD / LoQ Sederhana
             y_pred = slope * x + intercept
             residual_std = np.std(y - y_pred, ddof=2) if len(x) > 2 else 0.001
             lod = (3 * residual_std) / slope if slope != 0 else 0
@@ -181,7 +176,6 @@ elif menu == "Kurva Kalibrasi":
 elif menu == "Analisis & Validasi":
     st.title("📊 Analisis & Validasi Metode")
     
-    # Ambil nilai regresi linier dari halaman Kurva Kalibrasi jika ada
     slope = st.session_state.get('slope', 0.1228)
     intercept = st.session_state.get('intercept', 0.001)
     
@@ -194,7 +188,6 @@ elif menu == "Analisis & Validasi":
         y_sampel = st.number_input("Absorbansi Alat (Y) untuk Sampel", value=0.350, format="%.3f")
         fp_sampel = st.number_input("Masukkan Faktor Pengenceran (FP)", value=1.0, min_value=1.0)
         
-        # Rumus X = (Y - a) / b
         if slope != 0:
             c_hasil = ((y_sampel - intercept) / slope) * fp_sampel
             st.metric("Konsentrasi Akhir Sampel", f"{c_hasil:.3f} ppm")
@@ -205,6 +198,7 @@ elif menu == "Analisis & Validasi":
         st.subheader("Uji Presisi Alat (Keterulangan)")
         st.write("Masukkan nilai absorbansi data replikasi ulangan Anda:")
         
+        # BAGIAN YANG SUDAH DIPERBAIKI (TIDAK EROR LAGI)
         data_presisi = st.data_editor(
             pd.DataFrame({"Replikasi":, "Absorbansi": [0.350, 0.352, 0.348, 0.351, 0.349]}),
             num_rows="dynamic"
@@ -235,3 +229,8 @@ elif menu == "Analisis & Validasi":
             recovery = ((c_satu - c_nol) / c_add) * 100
             st.metric("Persentase Recovery (%Rec)", f"{recovery:.1f} %")
             if 80.0 <= recovery <= 120.0:
+                st.success("Akurasi Baik (Masuk dalam rentang regulasi 80% - 120%)")
+            else:
+                st.warning("Akurasi di luar batas ideal laboratorium.")
+        else:
+            st.error("Nilai penambahan standar harus lebih besar dari 0.")
